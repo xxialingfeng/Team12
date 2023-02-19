@@ -84,4 +84,8 @@ public class WebServiceActivity extends AppCompatActivity {
         if(pharm_class_epc!= null){ pharm_class_epc_tv.setText(pharm_class_epc);}
         if(active_ingredients!= null){ active_ingredients_tv.setText(active_ingredients);}
     }
+
+    public void startProgressBar() {
+        progressCircle.setVisibility(View.VISIBLE);
+    }
 }
