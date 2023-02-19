@@ -50,6 +50,7 @@ public class WebServiceActivity extends AppCompatActivity {
     TextView pharm_class_epc_tv; //text view that shows the pharm class
     TextView active_ingredients_tv; //text view that shows the active ingredient
     ProgressBar progressCircle; //progressive bar
+    String searchQuery;
 
 
     @Override
@@ -68,16 +69,22 @@ public class WebServiceActivity extends AppCompatActivity {
         spinnerDrugForm = findViewById(R.id.spinnerdrugform);
         spinnerBrandGeneric = findViewById(R.id.spinnerbrandgeneric);
         drugName = ((EditText) findViewById(R.id.drug_name)).getText().toString();
-        progressCircle =(ProgressBar)findViewById(R.id.progressBar); // initialize the progress bar
+        progressCircle = (ProgressBar) findViewById(R.id.progressBar); // initialize the progress bar
 
         //initialize savedInstanceState
         init(savedInstanceState);
 
         final String serviceURL = "https://api.fda.gov/drug/ndc.json?api_key=vXJCXZb1koUtVO6Sk2sio3X7IQHUEBYqgEjwMfKS";
+        String endpointURL = endpoint(serviceURL);
 
-        sendHttpRequest(serviceURL);
-        setText();
+        search_openfda.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendHttpRequest(endpointURL);
+            }
+        });
 
+        //sendHttpRequest(serviceURL);
 
         //activity for back button
         back.setOnClickListener(new View.OnClickListener() {
@@ -101,17 +108,30 @@ public class WebServiceActivity extends AppCompatActivity {
             pharm_class_epc = savedInstanceState.getString("pharm_class_epc");
             active_ingredients = savedInstanceState.getString("active_ingredients");
         }
-        if(product_ndc!= null){ product_ndc_tv.setText(product_ndc);}
-        if(product_type!= null){ product_type_tv.setText(product_type);}
-        if(routes!= null){ routes_tv.setText(routes);}
-        if(manufacturer_name!= null){ manufacturer_name_tv.setText(manufacturer_name);}
-        if(pharm_class_epc!= null){ pharm_class_epc_tv.setText(pharm_class_epc);}
-        if(active_ingredients!= null){ active_ingredients_tv.setText(active_ingredients);}
+        if (product_ndc != null) {
+            product_ndc_tv.setText(product_ndc);
+        }
+        if (product_type != null) {
+            product_type_tv.setText(product_type);
+        }
+        if (routes != null) {
+            routes_tv.setText(routes);
+        }
+        if (manufacturer_name != null) {
+            manufacturer_name_tv.setText(manufacturer_name);
+        }
+        if (pharm_class_epc != null) {
+            pharm_class_epc_tv.setText(pharm_class_epc);
+        }
+        if (active_ingredients != null) {
+            active_ingredients_tv.setText(active_ingredients);
+        }
     }
+
 
     private void sendHttpRequest(@NonNull String requestURL) {
 
-        Thread thread = new Thread(new Runnable(){
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
 
@@ -120,7 +140,7 @@ public class WebServiceActivity extends AppCompatActivity {
                     progressCircle.setVisibility(View.VISIBLE);
                     URL url = new URL(requestURL);
                     HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                    
+
                     // try to get the response as inputStream
                     InputStream in = urlConnection.getInputStream();
                     String result = convertStreamToString(in);
@@ -166,35 +186,54 @@ public class WebServiceActivity extends AppCompatActivity {
         }
     }
 
-    private void setText(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                product_type_tv.setText(product_ndc);
-                product_type_tv.setText(product_type);
-                manufacturer_name_tv.setText(manufacturer_name);
-                active_ingredients_tv.setText(active_ingredients);
-                routes_tv.setText(routes);
-            }
-        });
+    private String endpoint(String serviceURL) {
+        dosageForm = spinnerDrugForm.getSelectedItem().toString();
+        searchBrandGeneric = spinnerBrandGeneric.getSelectedItem().toString();
+        searchGeneric = !searchBrandGeneric.equals("BRAND NAME");
+        if (!searchGeneric) {
+            searchQuery = "patient.drug.openfda.brand_name:\"" + drugName + "\"+AND+patient.drug.openfda.dosage_form:\"" + dosageForm + "\"";
+        } else {
+            searchQuery = "patient.drug.openfda.generic_name:\"" + drugName + "\"+AND+patient.drug.openfda.dosage_form:\"" + dosageForm + "\"";
+        }
+        String endpointURL = serviceURL + "&search=" + searchQuery;
+        return endpointURL;
     }
 
-    public void fetchData(String json) throws JSONException {
+    private void fetchData(String json) throws JSONException {
         if (!json.isEmpty()) {
-            JSONObject jsonObject= new JSONObject(json);
+            JSONObject jsonObject = new JSONObject(json);
+            JSONArray jsonArray = jsonObject.getJSONArray("results");
+            JSONObject results = jsonArray.getJSONObject(0);
+            product_ndc = results.getString("product_ndc");
+            product_type = results.getString("product_type");
+            manufacturer_name = results.getJSONObject("openfda").getJSONArray("manufacturer_name").getString(0);
+            routes = results.getString("route");
+            //pharm_class_epc = results.getJSONObject("openfda").getJSONArray("pharm_class_epc").getString(0);
+            active_ingredients = results.getJSONArray("active_ingredients").get(0).toString();
 
-            product_ndc = jsonObject.getJSONArray("results").getJSONObject(0).getString("product_ndc");
-            product_type = jsonObject.getJSONArray("results").getJSONObject(0).getString("product_type");
-            manufacturer_name = jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("openfda").getJSONArray("manufacturer_name").getString(0);
-            routes = jsonObject.getJSONArray("results").getJSONObject(0).getJSONArray("route").getString(0);
-
-            JSONArray ingredients_arr = jsonObject.getJSONArray("results").getJSONObject(0).getJSONArray("active_ingredients");
-            List<String> ingredients_l = new ArrayList<>();
-            for (int i = 0; i < ingredients_arr.length(); i ++) {
-                JSONObject ingredients = ingredients_arr.getJSONObject(i);
-                String ingredient = ingredients.getString("name");
-                ingredients_l.add(ingredient);
-            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (product_ndc != null) {
+                        product_ndc_tv.setText(product_ndc);
+                    }
+                    if (product_type != null) {
+                        product_type_tv.setText(product_type);
+                    }
+                    if (manufacturer_name != null) {
+                        manufacturer_name_tv.setText(manufacturer_name);
+                    }
+                    if (active_ingredients != null) {
+                        active_ingredients_tv.setText(active_ingredients);
+                    }
+                    if (pharm_class_epc != null) {
+                        pharm_class_epc_tv.setText(pharm_class_epc);
+                    }
+                    if (routes != null) {
+                        routes_tv.setText(routes);
+                    }
+                }
+            });
         }
     }
 }
