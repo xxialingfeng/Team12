@@ -51,6 +51,7 @@ public class WebServiceActivity extends AppCompatActivity {
     TextView active_ingredients_tv; //text view that shows the active ingredient
     ProgressBar progressCircle; //progressive bar
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +76,8 @@ public class WebServiceActivity extends AppCompatActivity {
         final String serviceURL = "https://api.fda.gov/drug/ndc.json?api_key=vXJCXZb1koUtVO6Sk2sio3X7IQHUEBYqgEjwMfKS";
 
         sendHttpRequest(serviceURL);
+        setText();
+
 
         //activity for back button
         back.setOnClickListener(new View.OnClickListener() {
@@ -125,6 +128,7 @@ public class WebServiceActivity extends AppCompatActivity {
                     System.out.println(result); // check response, testing only
 
                     // TODO: process the result
+
                     fetchData(result);
 
                     // disconnect at end
@@ -162,14 +166,27 @@ public class WebServiceActivity extends AppCompatActivity {
         }
     }
 
+    private void setText(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                product_type_tv.setText(product_ndc);
+                product_type_tv.setText(product_type);
+                manufacturer_name_tv.setText(manufacturer_name);
+                active_ingredients_tv.setText(active_ingredients);
+                routes_tv.setText(routes);
+            }
+        });
+    }
+
     public void fetchData(String json) throws JSONException {
         if (!json.isEmpty()) {
             JSONObject jsonObject= new JSONObject(json);
 
-            String product_ndc = jsonObject.getJSONArray("results").getJSONObject(0).getString("product_ndc");
-            String product_type = jsonObject.getJSONArray("results").getJSONObject(0).getString("product_type");
-            String manufacturer = jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("openfda").getJSONArray("manufacturer_name").getString(0);
-            String route = jsonObject.getJSONArray("results").getJSONObject(0).getJSONArray("route").getString(0);
+            product_ndc = jsonObject.getJSONArray("results").getJSONObject(0).getString("product_ndc");
+            product_type = jsonObject.getJSONArray("results").getJSONObject(0).getString("product_type");
+            manufacturer_name = jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("openfda").getJSONArray("manufacturer_name").getString(0);
+            routes = jsonObject.getJSONArray("results").getJSONObject(0).getJSONArray("route").getString(0);
 
             JSONArray ingredients_arr = jsonObject.getJSONArray("results").getJSONObject(0).getJSONArray("active_ingredients");
             List<String> ingredients_l = new ArrayList<>();
@@ -178,11 +195,6 @@ public class WebServiceActivity extends AppCompatActivity {
                 String ingredient = ingredients.getString("name");
                 ingredients_l.add(ingredient);
             }
-//            product_type_tv.setText(product_ndc);
-//            product_type_tv.setText(product_type);
-//            manufacturer_name_tv.setText(manufacturer);
-//            active_ingredients_tv.setText(active_ingredients);
-//            routes_tv.setText(route);
         }
     }
 }
