@@ -10,9 +10,23 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
     Button button1;
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Button atYourServiceButton = findViewById(R.id.atYouServiceButton);
+        atYourServiceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startWebServiceActivity(view);
+            }
+        });
+
+    }
+
+    public void startWebServiceActivity(View view) {
+        Intent intent = new Intent(this, WebServiceActivity.class);
+        startActivity(intent);
     }
     public void startWebServiceActivity(View view){
         startActivity(new Intent(MainActivity.this, WebServiceActivity.class));

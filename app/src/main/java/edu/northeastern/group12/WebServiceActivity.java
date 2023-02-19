@@ -9,7 +9,17 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.json.JSONObject;
 
 /**
  * group assignment for week 6
@@ -38,9 +48,10 @@ public class WebServiceActivity extends AppCompatActivity {
     ProgressBar progressCircle; //progressive bar
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_service);
+
         product_ndc_tv = findViewById(R.id.product_ndc);
         product_type_tv = findViewById(R.id.product_type);
         routes_tv = findViewById(R.id.routes);
@@ -53,7 +64,14 @@ public class WebServiceActivity extends AppCompatActivity {
         spinnerBrandGeneric = findViewById(R.id.spinnerbrandgeneric);
         drugName = ((EditText) findViewById(R.id.drug_name)).getText().toString();
         progressCircle =(ProgressBar)findViewById(R.id.progressBar); // initialize the progress bar
-        init(savedInstanceState);//initialize savedInstanceState
+
+        //initialize savedInstanceState
+        init(savedInstanceState);
+
+        final String serviceURL = "https://api.fda.gov/drug/ndc.json?api_key=vXJCXZb1koUtVO6Sk2sio3X7IQHUEBYqgEjwMfKS";
+
+        // send request to service
+        sendHttpRequest(serviceURL);
 
         //activity for back button
         back.setOnClickListener(new View.OnClickListener() {
@@ -65,7 +83,7 @@ public class WebServiceActivity extends AppCompatActivity {
         });
     }
 
-    public void init(Bundle savedInstanceState) {
+    private void init(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             drugName = savedInstanceState.getString("drugName");
             dosageForm = savedInstanceState.getString("dosageForm");
@@ -85,7 +103,55 @@ public class WebServiceActivity extends AppCompatActivity {
         if(active_ingredients!= null){ active_ingredients_tv.setText(active_ingredients);}
     }
 
-    public void startProgressBar() {
-        progressCircle.setVisibility(View.VISIBLE);
+    private void sendHttpRequest(@NonNull String requestURL) {
+
+        Thread thread = new Thread(new Runnable(){
+            @Override
+            public void run() {
+
+                try {
+                    // try to do the HTTP request
+                    URL url = new URL(requestURL);
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                    
+                    // try to get the response as inputStream
+                    InputStream in = urlConnection.getInputStream();
+                    String result = convertStreamToString(in);
+
+                    System.out.println(result); // check response, testing only
+
+                    // TODO: process the result
+
+                    // disconnect at end
+                    urlConnection.disconnect();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        // Start the thread
+        thread.start();
+    }
+
+    private static String convertStreamToString(InputStream is) throws IOException {
+
+        if (is != null) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+            } finally {
+                is.close();
+            }
+            return sb.toString();
+        } else {
+            return "";
+        }
     }
 }
