@@ -27,6 +27,7 @@
         android:layout_height="wrap_content"
         android:text="@string/button_at_your_service"
         android:textAllCaps="false"
+        android:onClick="startWebServiceActivity"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
