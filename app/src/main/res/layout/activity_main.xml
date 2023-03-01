@@ -34,5 +34,31 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.10" />
 
+    <Button
+        android:id="@+id/FireBaseButton"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Get It To 'Em"
+        android:textAllCaps="false"
+        android:onClick="startFireBaseActivity"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.20" />
+
+    <Button
+        android:id="@+id/AboutButton"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="About"
+        android:textAllCaps="false"
+        android:onClick="startAboutActivity"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.30" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
