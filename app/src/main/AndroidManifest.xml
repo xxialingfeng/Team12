@@ -22,7 +22,7 @@
             android:exported="true"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".FireBaseActivity"
+            android:name=".fireBaseActivity.FireBaseActivity"
             android:exported="true"
             android:parentActivityName=".MainActivity" />
         <activity
