@@ -95,6 +95,7 @@ public class WebServiceActivity extends AppCompatActivity {
                 String[] drugForms = getResources().getStringArray(R.array.drugformspinner);
                 dosageForm = drugForms[position];
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -107,6 +108,7 @@ public class WebServiceActivity extends AppCompatActivity {
                 searchBrandGeneric = brandGeneric[position];
                 searchGeneric = !searchBrandGeneric.equals("BRAND NAME");
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 searchGeneric = true;
@@ -128,15 +130,15 @@ public class WebServiceActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("drugName",drugName);
-        outState.putString("dosageForm",dosageForm);
-        outState.putString("searchBrandGeneric",searchBrandGeneric);
-        outState.putString("product_ndc",product_ndc);
-        outState.putString("product_type",product_type);
-        outState.putString("routes",routes);
-        outState.putString("manufacturer_name",manufacturer_name);
-        outState.putString("pharm_class_epc",pharm_class_epc);
-        outState.putString("active_ingredients",active_ingredients);
+        outState.putString("drugName", drugName);
+        outState.putString("dosageForm", dosageForm);
+        outState.putString("searchBrandGeneric", searchBrandGeneric);
+        outState.putString("product_ndc", product_ndc);
+        outState.putString("product_type", product_type);
+        outState.putString("routes", routes);
+        outState.putString("manufacturer_name", manufacturer_name);
+        outState.putString("pharm_class_epc", pharm_class_epc);
+        outState.putString("active_ingredients", active_ingredients);
     }
 
     private void init(Bundle savedInstanceState) {
@@ -176,15 +178,15 @@ public class WebServiceActivity extends AppCompatActivity {
         String[] results = new String[6];
         URL url;
         String ndcURL;
-        try{
+        try {
             if (searchGeneric) {
                 Log.e("searchGeneric ", "true");
                 ndcURL = "https://api.fda.gov/drug/ndc.json?search=generic_name:\"" + drugName + "\"+AND+dosage_form:\"" + dosageForm + "\"&limit=1";
-            } else{
+            } else {
                 Log.e("searchGeneric ", "false");
                 ndcURL = "https://api.fda.gov/drug/ndc.json?search=brand_name:\"" + drugName + "\"+AND+dosage_form:\"" + dosageForm + "\"&limit=1";
             }
-            Log.e("ndcURL",ndcURL);
+            Log.e("ndcURL", ndcURL);
             url = new URL(ndcURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -195,23 +197,23 @@ public class WebServiceActivity extends AppCompatActivity {
             JSONObject jObject = new JSONObject(response);
             JSONObject drugResults = jObject.getJSONArray("results").getJSONObject(0);
             product_ndc = drugResults.getString("product_ndc");
-            product_type = drugResults.getString("product_type").replace("[","").replace("]","").replace("\"","");
-            routes = drugResults.getString("route").replace("[","").replace("]","").replace("\"","");
+            product_type = drugResults.getString("product_type").replace("[", "").replace("]", "").replace("\"", "");
+            routes = drugResults.getString("route").replace("[", "").replace("]", "").replace("\"", "");
             JSONObject openfda = drugResults.getJSONObject("openfda");
-            manufacturer_name = openfda.getString("manufacturer_name").replace("[","").replace("]","").replace("\"","");
-            pharm_class_epc = openfda.getJSONArray("pharm_class_epc").toString().replace("[","").replace("]","").replace("\"","");
+            manufacturer_name = openfda.getString("manufacturer_name").replace("[", "").replace("]", "").replace("\"", "");
+            pharm_class_epc = openfda.getJSONArray("pharm_class_epc").toString().replace("[", "").replace("]", "").replace("\"", "");
             JSONArray active_ingredients_array = drugResults.getJSONArray("active_ingredients");
             ArrayList<String> active_ingredients_list = new ArrayList<>();
             for (int i = 0; i < active_ingredients_array.length(); i++) {
-                active_ingredients_list.add(active_ingredients_array.getJSONObject(i).getString("name").replace("\"",""));
+                active_ingredients_list.add(active_ingredients_array.getJSONObject(i).getString("name").replace("\"", ""));
             }
-            active_ingredients = active_ingredients_list.toString().replace("[","").replace("]","").replace("\"","");
-            if (active_ingredients_array.length() > 3){
+            active_ingredients = active_ingredients_list.toString().replace("[", "").replace("]", "").replace("\"", "");
+            if (active_ingredients_array.length() > 3) {
                 active_ingredients_list = new ArrayList<>();
-                active_ingredients_list.add(active_ingredients_array.getJSONObject(0).getString("name").replace("\"",""));
-                active_ingredients_list.add(active_ingredients_array.getJSONObject(1).getString("name").replace("\"",""));
-                active_ingredients_list.add(active_ingredients_array.getJSONObject(2).getString("name").replace("\"",""));
-                active_ingredients = active_ingredients_list.toString().replace("[","").replace("]","").replace("\"","");
+                active_ingredients_list.add(active_ingredients_array.getJSONObject(0).getString("name").replace("\"", ""));
+                active_ingredients_list.add(active_ingredients_array.getJSONObject(1).getString("name").replace("\"", ""));
+                active_ingredients_list.add(active_ingredients_array.getJSONObject(2).getString("name").replace("\"", ""));
+                active_ingredients = active_ingredients_list.toString().replace("[", "").replace("]", "").replace("\"", "");
                 active_ingredients = active_ingredients + " - (And more)";
             }
 
@@ -221,7 +223,7 @@ public class WebServiceActivity extends AppCompatActivity {
             results[3] = manufacturer_name;
             results[4] = pharm_class_epc;
             results[5] = active_ingredients;
-            Log.e("results NDC: ", "product_ndc"+ product_ndc);
+            Log.e("results NDC: ", "product_ndc" + product_ndc);
             return results;
 
         } catch (JSONException | IOException e) {
@@ -296,8 +298,17 @@ public class WebServiceActivity extends AppCompatActivity {
         }
     }
 
-    public void runCallThread(View view){
+    public void runCallThread(View view) {
         runnableThread callThread = new runnableThread();
+        long endTime = System.currentTimeMillis()+10;
+        while (System.currentTimeMillis() < endTime) {
+            synchronized (this) {
+                try {
+                    wait(endTime - System.currentTimeMillis());
+                } catch (Exception e) {
+                }
+            }
+        }
         new Thread(callThread).start();
     }
 

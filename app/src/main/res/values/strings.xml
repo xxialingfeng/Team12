@@ -20,6 +20,9 @@
     <string name="execute_search">Search openFDA</string>
     <string name="search_error">No results to display. Please retry.</string>
     <string name="Back">Back</string>
+    <string name="username">Enter your username To login</string>
+    <string name="login">Login</string>
+    <string name="info">Group12 : Lingfeng Xia, Weize Sun, Wei Zhang, Yi Hsin Wen</string>
     <string-array name="brandgenericspinner">
         <item>GENERIC NAME</item>
         <item>BRAND NAME</item>
