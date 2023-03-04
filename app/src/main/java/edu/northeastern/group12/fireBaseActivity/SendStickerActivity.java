@@ -75,8 +75,9 @@ public class SendStickerActivity extends AppCompatActivity {
 
         // update recipient's receive history
 
-        sendNotification();
         addDataToDb(senderUsername, recipientUsername, sticker);
+        Intent intent = new Intent(this, FCMActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -89,29 +90,5 @@ public class SendStickerActivity extends AppCompatActivity {
         data.put("recipient", recipient);
         data.put("sticker", sticker);
         reference.child("chat").push().setValue(data);
-    }
-
-    /**
-     * Send notification
-     */
-    @SuppressLint("MissingPermission")
-    public void sendNotification() {
-
-        // Triggered if the notification is selected
-        Intent intent = new Intent(this, ReceiveNotificationActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivities(this, (int) System.currentTimeMillis(), new Intent[]{intent}, 0);
-
-        // Build notification
-        String channelId = "group12_A8";
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(this, channelId)
-                .setContentTitle("New Sticker")
-                .setContentText("Sticker id" + stickerId)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent);
-
-        // Send notification
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(0, notification.build());
     }
 }
