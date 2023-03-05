@@ -23,6 +23,17 @@
     <string name="username">Enter your username To login</string>
     <string name="login">Login</string>
     <string name="info">Group12 : Lingfeng Xia, Weize Sun, Wei Zhang, Yi Hsin Wen</string>
+    <string name="username_string">username_string</string>
+    <string name="login_string">login_string</string>
+    <string name="current_user_string">Current user:</string>
+    <string name="choose_sticker_string">Choose sticker:</string>
+    <string name="send_to_string">Send to:</string>
+    <string name="inbox_string">Inbox:</string>
+    <string name="select_receiver_string">Select receiver</string>
+    <string name="send_string">Send</string>
+    <string name="currently_empty_string">Currently empty</string>
+    <string name="sent_indicator_text" />
+    <string name="notification_channel_id" />
     <string-array name="brandgenericspinner">
         <item>GENERIC NAME</item>
         <item>BRAND NAME</item>
