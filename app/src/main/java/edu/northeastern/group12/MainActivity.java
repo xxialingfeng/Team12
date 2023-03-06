@@ -7,7 +7,6 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import edu.northeastern.group12.fireBaseActivity.FireBaseActivity;
 import edu.northeastern.group12.fireBaseActivity.LoginActivity;
 
 public class MainActivity extends AppCompatActivity {

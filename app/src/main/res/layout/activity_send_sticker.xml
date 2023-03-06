@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sendSticker_name"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fireBaseActivity.SendStickerActivity">
+
+    <TextView
+        android:id="@+id/recipientLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="256dp"
+        android:text="@string/send_to"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.104"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.021" />
+
+    <Spinner
+        android:id="@+id/usernameList"
+        android:layout_width="402dp"
+        android:layout_height="53dp"
+        android:contentDescription="@string/firebase_database"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.439" />
+
+    <ImageView
+        android:id="@+id/image1"
+        android:layout_width="125dp"
+        android:layout_height="112dp"
+        android:clickable="true"
+        android:contentDescription="@string/firebase_database"
+        android:onClick="clickImage"
+        android:src="@drawable/panda"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.192"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.117" />
+
+    <ImageView
+        android:id="@+id/image2"
+        android:layout_width="117dp"
+        android:layout_height="106dp"
+        android:clickable="true"
+        android:contentDescription="@string/firebase_database"
+        android:onClick="clickImage"
+        android:src="@drawable/polar_bear"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.742"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.127"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <Button
+        android:id="@+id/SendSticker_send"
+        android:layout_width="127dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="46dp"
+        android:layout_marginTop="411dp"
+        android:layout_marginEnd="255dp"
+        android:layout_marginBottom="260dp"
+        android:text="@string/sendSticker_send"
+        android:backgroundTint="#AE4D8B"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:onClick="sendSticker"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/sendStrick_checkhistory"
+        android:layout_width="161dp"
+        android:layout_height="61dp"
+        android:layout_marginStart="38dp"
+        android:layout_marginTop="411dp"
+        android:layout_marginEnd="47dp"
+        android:layout_marginBottom="259dp"
+        android:text="@string/sendSticker_Check"
+        android:backgroundTint="#AE4D8B"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:onClick="showHistory"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/SendSticker_send"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

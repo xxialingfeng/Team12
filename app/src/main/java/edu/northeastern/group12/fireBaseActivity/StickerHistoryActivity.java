@@ -3,6 +3,7 @@ package edu.northeastern.group12.fireBaseActivity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,80 +17,71 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import edu.northeastern.group12.R;
 
 public class StickerHistoryActivity extends AppCompatActivity{
-
-    private RecyclerView mRecyclerView;
-    private StickerAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-
-    private DatabaseReference mDatabaseRef;
-    private ValueEventListener mReceivedStickersListener;
-
-    private User mCurrentUser;
-    private ArrayList<Sticker> mReceivedStickersList;
+    private List<Sticker> stickers;
+    private String username;
+    private DatabaseReference databaseReference;
+    private int count;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sticker_history);
+        // Set the userName, databaseReference and stickers
+        username = getSharedPreferences("login", MODE_PRIVATE).getString("username", "unknownUser");
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        stickers = new ArrayList<>();
+        // Query from database and update history
+        update();
+        queryFromDatabase();
+    }
 
+    /**
+     * Update the history layout
+     */
+    private void update() {
+        RecyclerView received = findViewById(R.id.receivedHistoryRV);
+        received.setLayoutManager(new LinearLayoutManager(this));
+        received.setAdapter(new StickerAdapterRecyclerView(stickers));
 
-        // get current user from intent
-        Intent intent = getIntent();
-        mCurrentUser = (User) intent.getSerializableExtra("currentUser");
+        TextView countView = (TextView) findViewById(R.id.count);
+        countView.setText("# stickers sent: " + count);
+    }
 
-        // set up recycler view
-        mRecyclerView = findViewById(R.id.recyclerView);
-        mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-        // set up sticker adapter
-        mReceivedStickersList = new ArrayList<>();
-        mAdapter = new StickerAdapter(mReceivedStickersList);
-        mRecyclerView.setAdapter(mAdapter);
-
-
-        // set up database reference and listener for received stickers
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("messages");
-        mReceivedStickersListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mReceivedStickersList.clear();
-                for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
-                    Sticker sticker = messageSnapshot.getValue(Sticker.class);
-                    if (sticker != null && sticker.getToUser().equals(mCurrentUser.getUsername())) {
-                        mReceivedStickersList.add(sticker);
-                    }
+    /**
+     * Query the history from firebase database and update the layout
+     */
+    private void queryFromDatabase() {
+        stickers = new ArrayList<>();
+        count = 0;
+        databaseReference.child("stickers").get().addOnCompleteListener((t) -> {
+            HashMap<String, HashMap<String, Object>> tempMap = (HashMap) t.getResult().getValue();
+            if (tempMap == null) return;
+            for (String Key : tempMap.keySet()) {
+                String fromUser = (String) Objects.requireNonNull(tempMap.get(Key)).get("fromUser");
+                String id = String.valueOf(Objects.requireNonNull(tempMap.get(Key)).get("imageId"));
+                long sendTime = (long) tempMap.get(Key).get("sendTimeEpochSecond");
+                String toUser = (String) Objects.requireNonNull(tempMap.get(Key)).get("toUser");
+                if (toUser != null && toUser.equals(username)) {
+                    stickers.add(new Sticker(Integer.parseInt(id), fromUser, toUser, sendTime));
                 }
-                Collections.sort(mReceivedStickersList);
-                mAdapter.notifyDataSetChanged();
+                if (fromUser.equals(username)) {
+                    count += 1;
+                }
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(StickerHistoryActivity.this, "Failed to retrieve received stickers.", Toast.LENGTH_LONG).show();
-            }
-        };
+            stickers.sort(Collections.reverseOrder());
+            update();
+        });
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mDatabaseRef.addValueEventListener(mReceivedStickersListener);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mDatabaseRef.removeEventListener(mReceivedStickersListener);
-    }
-
-
 }

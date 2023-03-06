@@ -24,11 +24,9 @@
             android:name=".WebServiceActivity"
             android:exported="true"
             android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".fireBaseActivity.FireBaseActivity"
-            android:exported="true"
-            android:parentActivityName=".MainActivity" />
         <activity android:name=".fireBaseActivity.StickerHistoryActivity" />
+        <activity android:name=".fireBaseActivity.LoginActivity" />
+        <activity android:name=".fireBaseActivity.SendStickerActivity" />
         <activity
             android:name=".AboutActivity"
             android:exported="true"
